@@ -63,9 +63,9 @@ Elke nieuwe klasse moet vergezeld gaan van een unit test. Dit zorgt voor een rob
 
 ## Installatie
 
-1. Clone de repository: git clone <repository_url>
-2. Navigeer naar de projectmap: cd <project_directory>
-3. Installeer de benodigde npm pakketten:
+1. Clone de repository: git clone https://github.com/growthmovesFontys/GrowthMoves.git
+2. Navigeer naar de projectmap: cd locatie_van_clone
+3. Installeer de benodigde npm pakketten (die staan al in de package.json):
 
 ```bash
 npm install
