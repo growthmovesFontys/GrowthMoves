@@ -4,7 +4,6 @@
 
 Dit project is ontworpen om een interactieve en boeiende leeromgeving te creëren door middel van webgebaseerde spellen. Dankzij de integratie van pose-tracking via MediaPipe wordt een unieke gebruikerservaring geboden. Het project is bedoeld voor educatieve spellen die gebruik maken van beweging als invoermethode.
 
----
 
 ## Gebruikte Technologieën
 
@@ -12,7 +11,7 @@ Dit project is ontworpen om een interactieve en boeiende leeromgeving te creëre
 - **Three.js**: Een bibliotheek voor het creëren van 3D-graphics in de browser.
 - **TypeScript**: Een superset van JavaScript die type-checking toevoegt.
 
----
+
 
 ## Project Structuur
 
