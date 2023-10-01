@@ -10,6 +10,7 @@ Dit project is ontworpen om een interactieve en boeiende leeromgeving te creëre
 - **MediaPipe**: Voor het uitvoeren van pose-tracking in real-time.
 - **Three.js**: Een bibliotheek voor het creëren van 3D-graphics in de browser.
 - **TypeScript**: Een superset van JavaScript die type-checking toevoegt.
+- **canvas framework**: voor 2de games": een framework voor 2d spellen op de web.
 
 
 
@@ -39,9 +40,9 @@ De codebase is georganiseerd in verschillende lagen om een schone en modulaire s
 
 ## Branching en Pull Requests
 
-1. Nieuwe Branch: Maak altijd een nieuwe branch aan vanuit de dev-branch voor het werken aan nieuwe features of bugfixes.
-2. Code Review: Na afronding van de werkzaamheden, maak een Pull Request (PR) aan. Andere teamleden kunnen deze PR dan reviewen.
-3. Merging: Na goedkeuring van de PR kan deze gemerged worden met de dev-branch.
+1. **Nieuwe Branch**: Maak altijd een nieuwe branch aan vanuit de dev-branch voor het werken aan nieuwe features of bugfixes.
+2. **Code Review**: Na afronding van de werkzaamheden, maak een Pull Request (PR) aan. Andere teamleden kunnen deze PR dan reviewen.
+3. **Merging**: Na goedkeuring van de PR kan deze gemerged worden met de dev-branch.
 
 ## Unit Tests
 
