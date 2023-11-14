@@ -7,10 +7,12 @@
     "test": "tests"
   },
   "scripts": {
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "grothMoves",
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.5.5",
@@ -24,6 +26,7 @@
   },
   "dependencies": {
     "@mediapipe/pose": "^0.5.1675469404",
+    "ammo.js": "^0.0.10",
     "three": "^0.157.0"
   }
 }
