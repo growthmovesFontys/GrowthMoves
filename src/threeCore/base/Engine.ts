@@ -1,13 +1,12 @@
 import { Result } from "../../global_utils";
 import * as THREE from "three";
 import { SceneManager } from "./SceneManager";
+import { GameConfig } from "../../fruit_ninja/utitls/GameConfig";
 
 export class Engine {
   private _renderer: THREE.WebGLRenderer;
-  private _lastTime = performance.now();
   private _camera: THREE.PerspectiveCamera;
-  private _sceneManager: SceneManager;
-  private _currentScene: THREE.Scene = new THREE.Scene();
+  private _sceneManager: SceneManager = new SceneManager(GameConfig.createScene());
 
   private _updateDelegates: ((
     deltaTime: number,
@@ -16,12 +15,18 @@ export class Engine {
 
   constructor(
     camera: THREE.PerspectiveCamera,
-    sceneManager: SceneManager,
     renderer: THREE.WebGLRenderer
   ) {
     this._camera = camera;
-    this._sceneManager = sceneManager;
     this._renderer = renderer;
+  }
+
+  public get SceneManager(): SceneManager {
+    return this._sceneManager
+  }
+
+  public get camera(): THREE.PerspectiveCamera {
+    return this._camera;
   }
 
   public addUpdateDelegate(
@@ -34,21 +39,30 @@ export class Engine {
     let lastTime = 0;
 
     const animate = (now: number) => {
-      now *= 0.001; // Convert now to seconds
+      now *= 0.001;
       const deltaTime = now - lastTime;
       lastTime = now;
 
-      if (this._currentScene) {
+      if (this._sceneManager.CurrentScene) {
         this._updateDelegates.forEach((delegate) =>
-          delegate(deltaTime, this._currentScene)
+          delegate(deltaTime, this._sceneManager.CurrentScene)
         );
+        this._sceneManager.CurrentScene.traverse(function (node) {
+
+          if (node instanceof THREE.Mesh) {
+
+            if (node.userData.name) console.log(node.userData.name);
+
+          }
+
+        });
         this._sceneManager.update(deltaTime);
-        this._renderer.render(this._currentScene, this._camera);
+        this._renderer.render(this._sceneManager.CurrentScene, this._camera);
       }
 
       requestAnimationFrame(animate);
     };
 
-    requestAnimationFrame(animate); // Enkelvoudige aanroep voor requestAnimationFrame
+    requestAnimationFrame(animate);
   }
 }
