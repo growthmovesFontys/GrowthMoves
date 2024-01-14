@@ -1,4 +1,4 @@
-import { SceneManager } from "./../threeCore/base/SceneManager";
+import { PoseCameraProcessor } from './../mediaPipeLayer/poseCameraProcessor';
 import { Engine } from "../threeCore/base";
 import { FontManager } from "./loaders/FontManager";
 import { ImageLoader } from "./loaders/ImageManager";
@@ -9,10 +9,9 @@ import * as THREE from "three";
 import { ThrowingLogic } from "./services/ThrowingLogic";
 import { AnswerObject } from "./models/AnswerObject";
 import { World } from "cannon";
-import { BackgroundObject } from "./models/BackgroundObject";
 import { RaycastingLogic } from "./services/RaycastingLogic";
 
-class GameManager {
+export class GameManager {
   private _engine: Engine;
   private _fontManager: FontManager = new FontManager();
   private _imageLoader: ImageLoader = new ImageLoader();
@@ -23,24 +22,40 @@ class GameManager {
   private _nextQuestion: boolean = true;
   private _currentAnswerobject!: AnswerObject;
   private _raycastingLogic: RaycastingLogic;
+  private _poseCameraProcessor: PoseCameraProcessor;
+  private _trailPoints!: THREE.Points;
+  private _pointsMaterial = new THREE.PointsMaterial({
+    color: 0xffffff,
+    size: 1,
+    transparent: true,
+    opacity: 0.5
+  });
+  private _pointsGeometry = new THREE.BufferGeometry();
+  private _maxPoints = 30;
+  private _positions = new Float32Array(this._maxPoints * 3);
 
 
-  constructor() {
+
+
+  constructor(poseCameraProcessor: PoseCameraProcessor) {
     this.configCannonWorldObject();
     this._engine = new Engine(
       GameConfig.createCamera(),
       GameConfig.createRenderer()
     );
-
     this._raycastingLogic = new RaycastingLogic(this._engine.camera);
+    this._poseCameraProcessor = poseCameraProcessor;
+
   }
 
   public startGameLoop(deltatime: number, scene: THREE.Scene) {
 
+    if (!this._poseCameraProcessor.hasData) return;
+    this.updateTrailPositions();
     this.showQuestion();
     this.throwNextAnswer();
     this.addPhysicsToAnswer();
-    if (this._raycastingLogic.checkAnswer(this._currentAnswerobject, this._questionGenerator.getCorrectAnswer())) {
+    if (this._raycastingLogic.checkAnswer(this._trailPoints, this._currentAnswerobject, this._questionGenerator.getCorrectAnswer())) {
       this._nextQuestion = true;
     }
 
@@ -105,12 +120,14 @@ class GameManager {
         this._engine.addUpdateDelegate(this.startGameLoop.bind(this))
       );
 
+    this._poseCameraProcessor.start();
     this._engine.start();
+    this.createTrailPoints();
   }
 
   private configCannonWorldObject() {
     this._world = new World();
-    this._world.gravity.set(0, -7, 0);
+    this._world.gravity.set(0, -4, 0);
   }
 
   private showQuestion() {
@@ -157,10 +174,56 @@ class GameManager {
       backgroundMaterial
     );
     backgroundMesh.position.set(0, 0.5, -0.1);
-    backgroundMesh.scale.set(5, 5, 5);
+    backgroundMesh.scale.set(3, 3, 3);
 
     return backgroundMesh;
   }
+
+  private createTrailPoints(): void {
+    this._pointsGeometry.setAttribute('position', new THREE.BufferAttribute(this._positions, 3));
+    this._trailPoints = new THREE.Points(this._pointsGeometry, this._pointsMaterial);
+    this._engine.SceneManager.CurrentScene.add(this._trailPoints);
+  }
+
+  public updateTrailPositions() {
+
+    if (this._poseCameraProcessor.hasData()) {
+      const landmarks = this._poseCameraProcessor.getPoselandMarks();
+      const aspectRatio = window.innerWidth / window.innerHeight;
+
+
+      if (landmarks && landmarks.length > 15) {
+        const leftHand = landmarks[15];
+
+        // Reversen van de x-as
+        let targetX = -(leftHand.x - 0.5) * 2 * aspectRatio;
+        let targetY = -((leftHand.y - 0.5) * 2);
+
+        // Verplaats alle punten naar achteren in de array
+        for (let i = this._maxPoints - 1; i > 0; i--) {
+          this._positions[i * 3] = this._positions[(i - 1) * 3];
+          this._positions[i * 3 + 1] = this._positions[(i - 1) * 3 + 1];
+          this._positions[i * 3 + 2] = this._positions[(i - 1) * 3 + 2];
+
+          // Vervaag de kleur van de oudere punten
+          this._pointsMaterial.color.setHSL(1, 1, Math.max(0, (1 - i / this._maxPoints)));
+        }
+
+        // Update de positie van het nieuwe punt aan het begin van de array
+        this._positions[0] = this.lerp(this._positions[0], targetX);
+        this._positions[1] = this.lerp(this._positions[1], targetY);
+        this._positions[2] = 0;
+
+        this._pointsGeometry.attributes.position.needsUpdate = true;
+
+      }
+    }
+  }
+
+  private lerp(start: number, end: number) {
+    return start + (end - start) * 0.2;
+  }
+
+
 }
 
-export const gameManger: GameManager = new GameManager();

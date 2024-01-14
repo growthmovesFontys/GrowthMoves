@@ -1,6 +1,7 @@
 const path = require('path');
 
 module.exports = {
+  mode: 'development',
   entry: {
     'fruit_ninja': './src/fruit_ninja/index.ts',
   },

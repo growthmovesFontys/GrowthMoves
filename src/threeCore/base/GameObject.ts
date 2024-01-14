@@ -8,3 +8,4 @@ export abstract class GameObject extends THREE.Mesh implements IUpdatable {
     super(geometry, material);
   }
 }
+

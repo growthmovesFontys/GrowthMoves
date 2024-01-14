@@ -1,16 +1,18 @@
 import * as THREE from 'three';
 
 export class GameConfig {
-  static createCamera(): THREE.PerspectiveCamera {
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    camera.position.z = 10;
+  static camera: THREE.PerspectiveCamera;
+  static renderer: THREE.WebGLRenderer;
+  static width: number;
+  static height: number;
 
-    return camera;
+
+  static createCamera(): THREE.PerspectiveCamera {
+
+    GameConfig.camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    GameConfig.camera.position.z = 4;
+
+    return GameConfig.camera;
   }
 
   static createScene(): THREE.Scene {
@@ -18,11 +20,20 @@ export class GameConfig {
   }
 
   static createRenderer(): THREE.WebGLRenderer {
-    const renderer = new THREE.WebGLRenderer({ alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-    return renderer;
+    GameConfig.renderer = new THREE.WebGLRenderer({ alpha: true });
+    // Standaard grootte, wordt later aangepast
+    GameConfig.renderer.setSize(300, 150);
+    document.body.appendChild(GameConfig.renderer.domElement);
+
+    return GameConfig.renderer;
+  }
+
+  static updateSize(width: number, height: number): void {
+    GameConfig.renderer.setSize(width, height);
+    GameConfig.camera.aspect = width / height;
+    GameConfig.camera.updateProjectionMatrix();
+    GameConfig.width = width;
+    GameConfig.height = height;
+
   }
 }
-
-

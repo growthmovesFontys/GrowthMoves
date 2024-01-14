@@ -26,6 +26,7 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
+    "@mediapipe/camera_utils": "^0.3.1675466862",
     "@mediapipe/pose": "^0.5.1675469404",
     "ammo.js": "^0.0.10",
     "cannon": "^0.6.2",

@@ -1,40 +1,60 @@
 import * as THREE from 'three';
 
+
 export class RaycastingLogic {
     private raycaster: THREE.Raycaster;
-    private mouse: THREE.Vector2;
+
     private camera: THREE.PerspectiveCamera;
 
     constructor(camera: THREE.PerspectiveCamera) {
         this.camera = camera;
         this.raycaster = new THREE.Raycaster();
-        this.mouse = new THREE.Vector2();
 
-        document.addEventListener("mousemove", this.onDocumentMouseMove.bind(this), false);
     }
 
-    private onDocumentMouseMove(event: MouseEvent): void {
-        event.preventDefault();
-        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    }
+    public checkAnswer(trailPoints: THREE.Points, answerObject: THREE.Object3D, correctAnswer: number): boolean {
+        const pointPosition = new THREE.Vector3();
+        pointPosition.fromBufferAttribute(trailPoints.geometry.attributes.position, 0); // Eerste punt
+        const pointScreenPosition = pointPosition.clone().project(this.camera);
 
-
-    public checkAnswer(answerObject: THREE.Object3D, correctAnswer: number): boolean {
-        this.raycaster.setFromCamera(this.mouse, this.camera);
-        const intersects = this.raycaster.intersectObject(answerObject, true);
-
-        for (let intersect of intersects) {
-            let target: THREE.Object3D | null = intersect.object;
-
-            while (target && target !== this.camera) {
-                if (target.userData.answer === correctAnswer) {
-                    console.log("Correct answer found!");
-                    return true;
-                }
-                target = target.parent;
+        if (this.checkIntersectionWithObjectAndChildren(pointScreenPosition, answerObject, 0.2)) {
+            console.log("rte");
+            if (answerObject.userData.answer === correctAnswer) {
+                console.log("Correct answer found!");
+                return true;
             }
         }
+
         return false;
     }
+
+
+    private checkIntersectionWithObjectAndChildren(pointScreenPosition: THREE.Vector3, object: THREE.Object3D, tolerance: number): boolean {
+        if (this.isPointNearObject(pointScreenPosition, object, tolerance)) {
+            return true;
+        }
+
+        for (let child of object.children) {
+            if (this.isPointNearObject(pointScreenPosition, child, tolerance)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private isPointNearObject(pointScreenPosition: THREE.Vector3, object: THREE.Object3D, tolerance: number): boolean {
+        const objectPosition = new THREE.Vector3();
+        object.getWorldPosition(objectPosition);
+        const objectScreenPosition = objectPosition.clone().project(this.camera);
+
+        const distance = pointScreenPosition.distanceTo(objectScreenPosition);
+        return distance < tolerance;
+    }
 }
+
+
+
+
+
+

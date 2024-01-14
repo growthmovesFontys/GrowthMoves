@@ -1,4 +1,3 @@
-import { AnswerObject } from '../models/AnswerObject';
 import * as CANNON from 'cannon';
 import { Vector3 } from 'three';
 import * as THREE from 'three';
@@ -26,7 +25,7 @@ export class ThrowingLogic {
     const velocityY = 8 + Math.random() * 4;
 
     body.position.set(startPositionX, startPositionY, 0);
-    body.velocity.set(velocityX, velocityY, 0);
+    body.velocity.set(velocityX / 1.5, velocityY / 1.5, 0);
 
     return {
       startPosition: new Vector3(startPositionX, startPositionY, 0),

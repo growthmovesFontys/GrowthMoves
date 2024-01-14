@@ -2,7 +2,7 @@ import { Font } from 'three/examples/jsm/loaders/FontLoader';
 import * as THREE from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
 import { GameObject } from '../../threeCore/base';
-import { FontManager } from '../loaders/FontManager'; // Pas het pad aan naar je FontManager
+
 
 export class QuestionObject extends GameObject {
 
